@@ -1,0 +1,98 @@
+
+There are a total of 8 Tables, of which 4 of them are one-time setup. There are 3 transaction tables and 1 log table.
+
+Requirement:
+
+Stage 1 :	Creation of these tables	:  Expected time to complete Max 1 Day
+You need to create these table using CREATE command.  The structure for each table is detailed below. Check syntax for Foreign key etc
+pl refer to the material ie .SQL that were provided during the classes.
+
+Stage 2 :   Populating one time pre-determined data via INSERT Command into the 4 Master tables 	- 2 hours 
+Note		I will provide data values for these tables in separate text
+
+Stage 3 	Writing Stored Procedures based on the instructions in StoredProc.txt.
+
+Stage 4		Look at the word document sent earlier, and run queries for the reports
+
+Table 1				Name of the company GATX
+Name of table		ci_company
+CompanyID			VARCHAR(10)			Primary Key
+Name				VARCHAR(45)			Not NULL
+
+Table 2 			This table hold the operation code and the associated charges per tonne
+Name of table		ci_operation 
+Opcode 				VARCHAR(25)		Primary Key	
+Name				NAME			NOT NULL	
+Amount				DECIMAL(15,2)	Should be >0.00	Service charges 
+
+Table 3: 		
+Name of table 		ci_customer		
+CustID				INT				PK 		AUTOINCREMENT	SHOULD START WITH 5001
+Name				VARCHAR(45)		Not NULL
+
+
+Table 4				
+Name of table 		ci_TANK		
+TankID				INT				PK, AUTOINCREMENT	 STARTS WITH 9001
+TankType			VARCHAR(1)		L, M or S --> L(large), (M)edium, S(mall)	
+max_capacity		DECIMAL(15,2)		
+min_threshold		DECIMAL(15,2)		
+max_threshold		DECIMAL(15,2)		
+BalQty				DECIMAL(15,2)		
+Status				VARCHAR(1)		Valid are F, C	[F]ree or [C]ontracted
+
+
+Table 5				Holds the details of agreement  between customer and the company via an agreement
+Name of Table 		ci_CONTRACT
+ContractID			INT				PK, 	AUTOINCREMENT	STARTS WITH 7001	
+CustID				INT				Foreign key	Should exist in Customer table	
+TankID				INT				Foreign key	Should exist in Tank table	
+StartDate			DATE			Must be >= 2024-11-01 and Less than 2025-03-31	
+Duration			INT				Keep Duration for 1 YEAR	
+EndDate				DATE			End date should be autocomputed	based on start date, duration
+Status				VARCHAR(1)		Valid are A, C	DEFAULT A	
+
+
+Table 6				This table holds the details of the Tank into which product is filled from the ship/vessel
+Name of Table 		ci_tankfill     Tank filling operation
+TXNID				INT	AUTOINCREMENT
+TANKID				INT	FK REFERENCES TANK
+CustID				INT	FK REFERENCES CUSTID
+op_code				VARCHAR(15)	NOT NULL
+trx_date			DATE	NOT NULL
+ShipNo				VARCHAR(15)	NULL
+Quantity			decimal(15,2)	MUST BE > 0.00
+Status				VARCHAR(1) 	NOT NULL
+
+Table 7				Truck Loading operations. 
+Captures the container weight during entry and exit from the yard. The difference between the weight at the time of exit and the entry 
+is treated as the net weight.
+
+Name of Table 		ci_truckload
+TXNID				INT	AUTOINCREMENT
+TANKID				INT	FK REFERENCES TANK
+CustID				INT	FK REFERENCES CUSTID
+opcode				VARCHAR(15)		NOT NULL
+trx_date			DATE			NOT NULL
+TruckNo				VARCHAR(15)		NOT NULL
+entry_truck_wt		decimal(15,2)	NULL, but must be > 0.00 and should be chekced in stored procedure
+exit_truck_wt		decimal(15,2)	
+net_wt				decimal(15,2)	NULL
+Status				VARCHAR(1) 		NOT NULL DEFAULT "A"
+
+Table 8				This is like the attendance register.  It captures the summary details of the every successful transcation that happens 
+The details in the table should get INSERTED only during an Operation such as TankFill or TruckLoad
+Name of table 		ci_tranlog
+Txnid				INT 	autoincrement		
+Opcode				not null	Should be the opcode of the relevant operation ( tank fill and truckload)
+CustID				INT			Should be the custid of the relevant operation populated via Stored procedure
+TRX_DT				DATE		Should be the date of the operation (tank fill and the truckload)
+trx_qty				> 0.00		
+
+
+
+
+
+
+
+
